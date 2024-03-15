@@ -1,12 +1,33 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import lombok.Data;
+import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 /**
  * Film.
  */
-@Getter
-@Setter
+@Data
 public class Film {
+
+    private int id;
+
+    @NotBlank(message = "Name must not be empty")
+    private String name;
+
+    @Size(max = 200, message = "Description length should not exceed 200 characters")
+    private String description;
+
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @ReleaseDateConstraint
+    private LocalDate releaseDate;
+
+    @Positive(message = "Duration should be a positive number")
+    private int duration;
 }
