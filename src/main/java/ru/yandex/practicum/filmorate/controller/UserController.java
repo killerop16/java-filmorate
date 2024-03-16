@@ -21,6 +21,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
+        log.info("Get all users {}", users.size());
         return new ArrayList<>(users.values());
     }
 
@@ -28,7 +29,7 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         user.setId(generateId());
         user.setName(user.getDisplayName());
-        log.info(user.toString());
+        log.info("Creating user {}", user);
         users.put(user.getId(), user);
         return user;
     }
@@ -38,7 +39,7 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with ID" + user.getId() + " not found");
         }
-        log.info(user.toString());
+        log.info("Updating user {}", user);
         users.put(user.getId(), user);
         return user;
     }

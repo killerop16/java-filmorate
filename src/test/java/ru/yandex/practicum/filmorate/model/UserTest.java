@@ -37,7 +37,4 @@ class UserTest {
 
         assertEquals("John", displayName);
     }
-
-
-
 }

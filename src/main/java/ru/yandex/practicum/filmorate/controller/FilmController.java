@@ -22,13 +22,14 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("Get all films {}", films.size());
         return new ArrayList<>(films.values());
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         film.setId(generateId());
-        log.info(film.toString());
+        log.info("Creating film {}", film);
         films.put(film.getId(),film);
         return film;
     }
@@ -38,7 +39,7 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film with ID" + film.getId() + " not found");
         }
-        log.info(film.toString());
+        log.info("Updating film {}", film);
         films.put(film.getId(),film);
         return film;
     }

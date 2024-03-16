@@ -17,7 +17,6 @@ public class User {
     @Email(message = "Email must be a valid email address")
     private String email;
 
-    @NotNull(message = "Login cannot be null")
     @NotBlank(message = "Login cannot be blank")
     private String login;
 
