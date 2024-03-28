@@ -3,19 +3,21 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.annotation.ReleaseDateConstraint;
+import ru.yandex.practicum.filmorate.validation.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
  */
 @Data
 public class Film {
-
+    private Set<Integer> likes = new HashSet<>();
     private int id;
 
     @NotBlank(message = "Name must not be empty")
