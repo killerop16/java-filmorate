@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,12 +14,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FilmService implements FilmsService {
     private static Integer COUNT_FILMS = 10;
 
-    InMemoryFilmStorage filmStorage;
-    InMemoryUserStorage userStorage;
+    private final InMemoryFilmStorage filmStorage;
+    private final InMemoryUserStorage userStorage;
 
     public Film getFilmById(int id) {
         checkFilmInStorage(id);

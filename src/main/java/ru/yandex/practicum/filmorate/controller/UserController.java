@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,28 +12,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class UserController {
-    InMemoryUserStorage userStorage;
-    UserService userService;
+    private final UserService userService;
 
     @GetMapping
     public List<User> getUsers() {
-        log.info("Get all users {}", userStorage.getAll().size());
-        return userStorage.getAll();
+        log.info("Get all users {}", userService.getAll().size());
+        return userService.getAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Creating user {}", user);
-        return userStorage.addUser(user);
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.info("Updating user {}", user);
-        userStorage.updateUser(user);
+        userService.updateUser(user);
         return user;
     }
 

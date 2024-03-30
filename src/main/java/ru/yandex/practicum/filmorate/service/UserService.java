@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -15,10 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements UsersService {
-
-    InMemoryUserStorage userStorage;
+    private final InMemoryUserStorage userStorage;
 
     public User getUserById(int id) {
         checkUserInStorage(id);
