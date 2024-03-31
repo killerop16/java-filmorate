@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @RequiredArgsConstructor
-public class UserService implements UsersService {
+public class UserServiceImpl implements UsersService {
     private final InMemoryUserStorage userStorage;
 
     public User getUserById(int id) {

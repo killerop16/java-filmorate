@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @Data
 @RequiredArgsConstructor
-public class FilmService implements FilmsService {
+public class FilmServiceImpl implements FilmsService {
     private static Integer COUNT_FILMS = 10;
 
     private final InMemoryFilmStorage filmStorage;
