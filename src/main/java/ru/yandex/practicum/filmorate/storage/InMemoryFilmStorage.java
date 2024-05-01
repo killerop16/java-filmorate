@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -44,5 +45,23 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Film with ID" + film.getId() + " not found");
         }
         return films.put(film.getId(), film);
+    }
+
+    @Override
+    public Film getById(Integer id) {
+        if (films.containsKey(id)) {
+           throw new ObjectNotFoundException("Film with ID " + id + " does not exist.");
+        }
+        return films.get(id);
+    }
+
+    @Override
+    public Film addLike(int filmsId, int userId) {
+        return null;
+    }
+
+    @Override
+    public Film delLike(int filmsId, int userId) {
+        return null;
     }
 }

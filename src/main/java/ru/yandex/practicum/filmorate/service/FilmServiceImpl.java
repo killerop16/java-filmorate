@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,28 +18,28 @@ import java.util.stream.Collectors;
 public class FilmServiceImpl implements FilmsService {
     private static Integer COUNT_FILMS = 10;
 
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     public Film getFilmById(int id) {
         checkFilmInStorage(id);
-        return filmStorage.getFilms().get(id);
+        return filmStorage.getById(id);
     }
 
     public Film addLike(int filmsId, int userId) {
         checkFilmAndUserInStorage(filmsId, userId);
 
-        Film film = filmStorage.getFilms().get(filmsId);
+        Film film = filmStorage.getById(filmsId);
         film.getLikes().add(userId);
-        return film;
+        return filmStorage.addLike(filmsId, userId);
     }
 
     public Film delLike(int filmsId, int userId) {
         checkFilmAndUserInStorage(filmsId, userId);
 
-        Film film = filmStorage.getFilms().get(filmsId);
+        Film film = filmStorage.getById(filmsId);
         film.getLikes().remove(userId);
-        return film;
+        return filmStorage.delLike(filmsId, userId);
     }
 
     public List<Film> getTopFilm(Integer count) throws Exception {
@@ -47,9 +47,10 @@ public class FilmServiceImpl implements FilmsService {
             count = COUNT_FILMS;
         }
 
-        return filmStorage.getFilms().values().stream()
+        List<Film> filmList = filmStorage.getAll();
+        return filmList.stream()
                 .sorted((film1, film2) -> Integer.compare(film2.getLikes().size(), film1.getLikes().size()))
-                .skip(Math.max(0, filmStorage.getFilms().size() - count))
+                .skip(Math.max(0, filmList.size() - count))
                 .limit(count)
                 .collect(Collectors.toList());
     }
@@ -58,7 +59,7 @@ public class FilmServiceImpl implements FilmsService {
      * Метод проверяющий наличие фильма с данным ID в хранилище
      */
     private void checkFilmInStorage(int id) {
-        if (!filmStorage.getFilms().containsKey(id)) {
+        if (filmStorage.getById(id) == null) {
             throw new ObjectNotFoundException("Film with ID " + id + " does not exist.");
         }
     }
@@ -67,11 +68,11 @@ public class FilmServiceImpl implements FilmsService {
      * Метод проверяющий наличие фильма и пользователя с данными ID в хранилище
      */
     private void checkFilmAndUserInStorage(int id, int userId) {
-        if (!filmStorage.getFilms().containsKey(id)) {
+        if (filmStorage.getById(id) == null) {
             throw new ObjectNotFoundException("Film with ID " + id + " does not exist.");
         }
 
-        if (!userStorage.getUsers().containsKey(userId)) {
+        if (userStorage.getById(userId) == null) {
             throw new ObjectNotFoundException("User with ID " + id + " does not exist.");
         }
     }
