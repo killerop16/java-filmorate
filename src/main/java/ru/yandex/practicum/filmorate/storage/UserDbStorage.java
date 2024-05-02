@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -11,30 +10,19 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.*;
 
 @Component
-@Primary
 @AllArgsConstructor
 public class UserDbStorage implements UserStorage {
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public User addFriend(int id, int friendID) {
-        int rowsUpdated = jdbcTemplate.update("INSERT INTO useruser (userid1, userid2) VALUES(?, ?)", id, friendID);
-
-//        if (rowsUpdated == 0) {
-//            throw new ObjectNotFoundException("Object with ID does not exist in the database");
-//        }
-
+        jdbcTemplate.update("INSERT INTO useruser (userid1, userid2) VALUES(?, ?)", id, friendID);
         return getById(id);
     }
 
     @Override
     public User delFriend(int id, int friendID) {
-        int rowsUpdated = jdbcTemplate.update("DELETE FROM useruser WHERE userid1=? AND userid2=?", id, friendID);
-
-//        if (rowsUpdated == 0) {
-//            throw new ObjectNotFoundException("Object with ID does not exist in the database");
-//        }
-
+       jdbcTemplate.update("DELETE FROM useruser WHERE userid1=? AND userid2=?", id, friendID);
         return getById(id);
     }
 

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import javax.validation.ValidationException;
 import java.util.*;
 
 @Component
-@Primary
 @AllArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private JdbcTemplate jdbcTemplate;
@@ -49,8 +47,9 @@ public class FilmDbStorage implements FilmStorage {
             film.setMpa(new Mpa(rs.getString("rating"), rs.getInt("mpa_id")));
             film.setLikes(new HashSet<>());
             do {
-                film.getLikes().add(rs.getInt("user_id"));
-
+                if (rs.getString("user_id") != null) {
+                    film.getLikes().add(rs.getInt("user_id"));
+                }
 
                 if (rs.getString("genre") != null) {
                     if (film.getGenres() == null) {
@@ -69,7 +68,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getAll() {
         Map<Integer, Film> filmMap = new HashMap<>();
-
         jdbcTemplate.query("SELECT f.id, f.film_name, f.description, f.releasedate, f.duration,  \n" +
                 "m.mpa_name AS rating, m.id as mpa_id , user_id, g.genre_name AS genre, g.id as genre_id \n" +
                 "FROM film f \n" +
