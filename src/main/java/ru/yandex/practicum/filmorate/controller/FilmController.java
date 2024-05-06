@@ -58,4 +58,10 @@ public class FilmController {
         log.info("Get a list of the top movies by number of likes {}", count);
         return filmService.getTopFilm(count);
     }
+
+    @GetMapping("/{id}")
+    public Film getGenreByFilmId(@PathVariable int id) {
+        log.info("Get Film by ID {}", id);
+        return  getFilmById(id);
+    }
 }

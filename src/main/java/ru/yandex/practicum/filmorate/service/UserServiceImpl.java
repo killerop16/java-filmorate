@@ -6,82 +6,79 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @Data
 @RequiredArgsConstructor
 public class UserServiceImpl implements UsersService {
-    private final InMemoryUserStorage userStorage;
-
-    public User getUserById(int id) {
-        checkUserInStorage(id);
-        return userStorage.getUsers().get(id);
-    }
+    private final UserStorage userStorage;
 
     public User addFriend(int id, int friendID) {
         checkUsersInStorage(id, friendID);
 
-        User user1 = userStorage.getUsers().get(id);
-        User user2 = userStorage.getUsers().get(friendID);
-
-        user1.getFriendsId().add(user2.getId());
-        user2.getFriendsId().add(user1.getId());
-
-        return user1;
+        User user = userStorage.getById(id);
+        user.getFriendsId().add(friendID);
+        return userStorage.addFriend(id, friendID);
     }
 
     public User delFriend(int id, int friendID) {
         checkUsersInStorage(id, friendID);
 
-        User user1 = userStorage.getUsers().get(id);
-        User user2 = userStorage.getUsers().get(friendID);
-
-        user1.getFriendsId().remove(user2.getId());
-        user2.getFriendsId().remove(user1.getId());
-
-        return user1;
-
+        User user = userStorage.getById(id);
+        user.getFriendsId().remove(friendID);
+        return userStorage.delFriend(id, friendID);
     }
 
     public List<User> getFriends(int id) {
         checkUserInStorage(id);
-
-        User user = userStorage.getUsers().get(id);
-
         List<User> friends = new ArrayList<>();
-        for (Integer i : user.getFriendsId()) {
-            friends.add(userStorage.getUsers().get(i));
+        User user = userStorage.getById(id);
+
+        Set<Integer> friendIds = user.getFriendsId();
+        List<Integer> friendIdsList = new ArrayList<>(friendIds);
+        Collections.reverse(friendIdsList);
+
+        for (Integer friendId : friendIdsList) {
+            if (friendId == 0) break;
+            friends.add(userStorage.getById(friendId));
         }
         return friends;
     }
 
     public List<User> getCommonFriend(int id, int otherId) {
         checkUsersInStorage(id, otherId);
+        checkUsersInStorage(id, otherId);
 
-        Set<Integer> set1 = userStorage.getUsers().get(id).getFriendsId();
-        Set<Integer> set2 = userStorage.getUsers().get(otherId).getFriendsId();
+        Set<Integer> set1 = userStorage.getById(id).getFriendsId();
+        Set<Integer> set2 = userStorage.getById(otherId).getFriendsId();
 
-        HashMap<Integer, User> userMap = userStorage.getUsers();
+        Map<Integer, User> userMap = userStorage.getAll().stream().collect(Collectors.toMap(User::getId, Function.identity()));
 
-        return set1.stream()
-                .filter(set2::contains)
-                .map(userMap::get)
-                .collect(Collectors.toList());
+        List<User> commonFriends = new ArrayList<>();
+
+        for (Integer friendId : set1) {
+            if (set2.contains(friendId)) {
+                commonFriends.add(userMap.get(friendId));
+            }
+        }
+        return commonFriends;
     }
 
+    public User getUserById(int id) {
+        checkUserInStorage(id);
+        return userStorage.getById(id);
+    }
 
     /**
      * Метод проверяющий наличие пользователя с данным ID в хранилище
      */
     private void checkUserInStorage(int id) {
-        if (!userStorage.getUsers().containsKey(id)) {
+        if (userStorage.getById(id) == null) {
             throw new ObjectNotFoundException("User with ID " + id + " does not exist.");
         }
     }
@@ -90,10 +87,10 @@ public class UserServiceImpl implements UsersService {
      * Метод проверяющий наличие пользователей с данными ID в хранилище
      */
     private void checkUsersInStorage(int id, int otherId) {
-        if (!userStorage.getUsers().containsKey(id)) {
+        if (userStorage.getById(id) == null) {
             throw new ObjectNotFoundException("User with ID " + id + " does not exist.");
         }
-        if (!userStorage.getUsers().containsKey(otherId)) {
+        if (userStorage.getById(otherId) == null) {
             throw new ObjectNotFoundException("User with ID " + otherId + " does not exist.");
         }
     }

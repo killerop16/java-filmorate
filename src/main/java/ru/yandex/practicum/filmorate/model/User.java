@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -16,9 +17,9 @@ import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class User {
     private Set<Integer> friendsId = new HashSet<>();
-
     private int id;
 
     @NotEmpty(message = "Email cannot be empty")
@@ -35,7 +36,16 @@ public class User {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthday;
 
+
     public String getDisplayName() {
         return name == null || name.isEmpty() ? login : name;
+    }
+
+    public User(int id, String email, String login, String name, LocalDate of) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = of;
     }
 }
